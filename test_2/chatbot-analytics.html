@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot Analytics - Chatbot Platform</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        :root {
+            --bg-color: #0D0D0D;
+            --sidebar-bg: #1A1A1A;
+            --primary-accent: #8A2BE2; /* Purple */
+            --primary-text: #E0E0E0;
+            --secondary-text: #A0A0A0;
+            --border-color: #2A2A2A;
+            --input-bg: #0D0D0D;
+            --active-status-bg: rgba(76, 175, 80, 0.1);
+            --active-status-text: #4CAF50;
+            --inactive-status-bg: rgba(244, 67, 54, 0.1);
+            --inactive-status-text: #F44336;
+            --hover-bg: #252525;
+            --table-header-bg: #1F1F1F;
+            --search-bar-bg: #2C2C2C;
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            background-color: var(--bg-color);
+            color: var(--primary-text);
+            display: flex;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        .sidebar {
+            width: 240px;
+            background-color: var(--sidebar-bg);
+            padding: 20px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid var(--border-color);
+        }
+        .sidebar .logo-area {
+            padding: 0 15px;
+            margin-bottom: 30px;
+        }
+        .sidebar .logo-area h1 {
+            font-size: 18px;
+            color: #ffffff;
+            font-weight: 600;
+            margin: 0 0 5px 0;
+        }
+        .sidebar .logo-area p {
+            font-size: 14px;
+            color: var(--secondary-text);
+            margin: 0;
+        }
+        .sidebar nav a {
+            display: flex;
+            align-items: center;
+            color: var(--secondary-text);
+            text-decoration: none;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-size: 15px;
+            font-weight: 500;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        .sidebar nav a svg {
+            margin-right: 12px;
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
+        }
+        .sidebar nav a:hover {
+            background-color: var(--hover-bg);
+            color: var(--primary-text);
+        }
+        .sidebar nav a.active { /* Active link will be Chatbots */
+            background-color: var(--primary-accent);
+            color: #ffffff;
+        }
+        .main-content {
+            flex-grow: 1;
+            padding: 40px;
+            height: 100vh;
+            overflow-y: auto;
+        }
+        h2.page-title {
+            font-size: 32px;
+            color: #ffffff;
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+        p.page-subtitle {
+            font-size: 16px;
+            color: var(--secondary-text);
+            margin-top: 0;
+            margin-bottom: 30px;
+        }
+        .analytics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        .analytics-card {
+            background-color: var(--sidebar-bg);
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+        }
+        .analytics-card h3 {
+            margin-top: 0;
+            font-size: 18px;
+            color: var(--primary-text);
+            margin-bottom: 15px;
+        }
+        .analytics-card .value {
+            font-size: 28px;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 5px;
+        }
+        .analytics-card .change {
+            font-size: 14px;
+        }
+        .change.positive {
+            color: var(--active-status-text);
+        }
+        .change.negative {
+            color: var(--inactive-status-text);
+        }
+        .chart-container {
+            background-color: var(--sidebar-bg);
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 30px;
+        }
+        .chart-container h3 {
+            margin-top: 0;
+            font-size: 18px;
+            color: var(--primary-text);
+            margin-bottom: 20px;
+        }
+        /* Placeholder for chart styling */
+        .chart-placeholder {
+            height: 300px;
+            background-color: var(--search-bar-bg);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            color: var(--secondary-text);
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo-area">
+            <h1>Chatbot Builder</h1>
+            <p>Acme Co</p>
+        </div>
+        <nav>
+            <a href="index.html">
+                <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+                Overview
+            </a>
+            <a href="knowledge-base.html">
+                <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+                Knowledge Base
+            </a>
+            <a href="#"> <!-- Placeholder -->
+                <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-3v3h-2v-3H9v-2h3V8h2v3h3v2z"/></svg>
+                Playground
+            </a>
+            <a href="#"> <!-- Placeholder -->
+                <svg viewBox="0 0 24 24"><path d="M13 7h-2v2h2V7zm0 4h-2v2h2v-2zm4 0h-2v2h2v-2zm-4 5h-2v2h2v-2zM5 21h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2zM7 5h10v14H7V5z"/></svg>
+                Integrations
+            </a>
+            <a href="embed-generator.html" class="active"> <!-- Chatbots link is active -->
+                 <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>
+                Chatbots
+            </a>
+            <a href="#"> <!-- Placeholder for settings, link to embed-generator.html#settings if that page exists -->
+                <svg viewBox="0 0 24 24"><path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69-.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c.04.32.07.65.07.98s-.03.66-.07.98l-2.11 1.65c-.19-.15-.24-.42.12.64l2 3.46c.12.22.39.3.61.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61.22l2 3.46c.13.22.07.49.12.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/></svg>
+                Settings
+            </a>
+        </nav>
+    </div>
+
+    <div class="main-content">
+        <h2 class="page-title" id="analytics-page-title">Chatbot Analytics</h2>
+        <p class="page-subtitle" id="analytics-page-subtitle">Detailed performance metrics for your chatbot.</p>
+
+        <div class="analytics-grid">
+            <div class="analytics-card">
+                <h3>Total Conversations</h3>
+                <div class="value" id="total-conversations">--</div>
+                <div class="change positive" id="conversations-change">+0%</div>
+            </div>
+            <div class="analytics-card">
+                <h3>Messages Sent</h3>
+                <div class="value" id="messages-sent">--</div>
+                <div class="change positive" id="messages-change">+0%</div>
+            </div>
+            <div class="analytics-card">
+                <h3>Avg. Session Duration</h3>
+                <div class="value" id="avg-session-duration">--m --s</div>
+                <div class="change negative" id="duration-change">-0%</div>
+            </div>
+             <div class="analytics-card">
+                <h3>Resolution Rate</h3>
+                <div class="value" id="resolution-rate">--%</div>
+                <div class="change positive" id="resolution-change">+0%</div>
+            </div>
+        </div>
+
+        <div class="chart-container">
+            <h3>Conversations Over Time</h3>
+            <div class="chart-placeholder" id="conversations-chart">
+                Chart will be displayed here.
+            </div>
+        </div>
+        
+        <div class="chart-container">
+            <h3>User Satisfaction</h3>
+             <div class="chart-placeholder" id="satisfaction-chart">
+                Chart will be displayed here.
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const params = new URLSearchParams(window.location.search);
+            const botId = params.get('botId');
+            const botName = params.get('botName');
+
+            if (botName) {
+                document.getElementById('analytics-page-title').textContent = `${botName} - Analytics`;
+            }
+            if (botId) {
+                // In a real application, you would fetch analytics data for this botId
+                // For now, we'll use placeholder data or data from localStorage if you implement it.
+                console.log(`Loading analytics for Bot ID: ${botId}`);
+                loadAnalyticsData(botId);
+            } else {
+                document.getElementById('analytics-page-subtitle').textContent = "No chatbot selected. Please go back and select a chatbot to view its analytics.";
+                // Hide or disable analytics sections if no bot is selected
+                document.querySelector('.analytics-grid').style.display = 'none';
+                document.querySelectorAll('.chart-container').forEach(c => c.style.display = 'none');
+            }
+        });
+
+        function loadAnalyticsData(botId) {
+            // Placeholder: Simulate fetching data.
+            // Each bot would have its own analytics data, potentially stored in localStorage
+            // keyed by botId, e.g., localStorage.getItem(`analytics_${botId}`)
+            const analyticsData = getBotAnalyticsFromStorage(botId);
+
+            document.getElementById('total-conversations').textContent = analyticsData.totalConversations || '--';
+            document.getElementById('conversations-change').textContent = analyticsData.conversationsChange || '+0%';
+            if (analyticsData.conversationsChange && analyticsData.conversationsChange.startsWith('-')) {
+                document.getElementById('conversations-change').className = 'change negative';
+            } else {
+                document.getElementById('conversations-change').className = 'change positive';
+            }
+
+
+            document.getElementById('messages-sent').textContent = analyticsData.messagesSent || '--';
+            document.getElementById('messages-change').textContent = analyticsData.messagesChange || '+0%';
+             if (analyticsData.messagesChange && analyticsData.messagesChange.startsWith('-')) {
+                document.getElementById('messages-change').className = 'change negative';
+            } else {
+                document.getElementById('messages-change').className = 'change positive';
+            }
+
+            document.getElementById('avg-session-duration').textContent = analyticsData.avgSessionDuration || '--m --s';
+            document.getElementById('duration-change').textContent = analyticsData.durationChange || '-0%';
+            if (analyticsData.durationChange && analyticsData.durationChange.startsWith('-')) {
+                document.getElementById('duration-change').className = 'change negative';
+            } else {
+                // Assuming positive or neutral change is styled as positive for duration
+                document.getElementById('duration-change').className = 'change positive';
+            }
+            
+            document.getElementById('resolution-rate').textContent = analyticsData.resolutionRate || '--%';
+            document.getElementById('resolution-change').textContent = analyticsData.resolutionChange || '+0%';
+             if (analyticsData.resolutionChange && analyticsData.resolutionChange.startsWith('-')) {
+                document.getElementById('resolution-change').className = 'change negative';
+            } else {
+                document.getElementById('resolution-change').className = 'change positive';
+            }
+
+            // Placeholder for chart rendering
+            // In a real app, you'd use a charting library (e.g., Chart.js)
+            // and analyticsData.conversationHistory, analyticsData.satisfactionData
+            document.getElementById('conversations-chart').textContent = `Conversation chart for ${botId} (Data: ${JSON.stringify(analyticsData.conversationHistory || [])})`;
+            document.getElementById('satisfaction-chart').textContent = `Satisfaction chart for ${botId} (Data: ${JSON.stringify(analyticsData.satisfactionData || [])})`;
+        }
+
+        function getBotAnalyticsFromStorage(botId) {
+            const storedData = localStorage.getItem(`analytics_${botId}`);
+            if (storedData) {
+                return JSON.parse(storedData);
+            }
+            // Return sample/default data if nothing is stored for this bot
+            // This simulates unique data per bot
+            const sampleAnalytics = {
+                'bot1': { // Corresponds to 'Customer Support Bot'
+                    totalConversations: Math.floor(Math.random() * 500) + 100,
+                    conversationsChange: `+${Math.floor(Math.random() * 10)}%`,
+                    messagesSent: Math.floor(Math.random() * 2000) + 500,
+                    messagesChange: `+${Math.floor(Math.random() * 15)}%`,
+                    avgSessionDuration: `${Math.floor(Math.random() * 10) + 2}m ${Math.floor(Math.random() * 60)}s`,
+                    durationChange: `-${Math.floor(Math.random() * 5)}%`,
+                    resolutionRate: `${Math.floor(Math.random() * 40) + 60}%`,
+                    resolutionChange: `+${Math.floor(Math.random() * 8)}%`,
+                    conversationHistory: [{date: '2024-06-10', count: 20}, {date: '2024-06-11', count: 25}],
+                    satisfactionData: [{rating: 5, count: 150}, {rating: 4, count: 80}]
+                },
+                'bot2': { // Corresponds to 'Sales Assistant Bot'
+                    totalConversations: Math.floor(Math.random() * 300) + 50,
+                    conversationsChange: `-${Math.floor(Math.random() * 5)}%`,
+                    messagesSent: Math.floor(Math.random() * 1000) + 200,
+                    messagesChange: `+${Math.floor(Math.random() * 8)}%`,
+                    avgSessionDuration: `${Math.floor(Math.random() * 8) + 1}m ${Math.floor(Math.random() * 60)}s`,
+                    durationChange: `+${Math.floor(Math.random() * 3)}%`,
+                    resolutionRate: `${Math.floor(Math.random() * 30) + 50}%`,
+                    resolutionChange: `-${Math.floor(Math.random() * 4)}%`,
+                    conversationHistory: [{date: '2024-06-10', count: 10}, {date: '2024-06-11', count: 12}],
+                    satisfactionData: [{rating: 5, count: 60}, {rating: 4, count: 40}]
+                },
+                 'bot3': { // Corresponds to 'Marketing Bot'
+                    totalConversations: Math.floor(Math.random() * 800) + 200,
+                    conversationsChange: `+${Math.floor(Math.random() * 12)}%`,
+                    messagesSent: Math.floor(Math.random() * 3000) + 1000,
+                    messagesChange: `+${Math.floor(Math.random() * 20)}%`,
+                    avgSessionDuration: `${Math.floor(Math.random() * 12) + 3}m ${Math.floor(Math.random() * 60)}s`,
+                    durationChange: `+${Math.floor(Math.random() * 6)}%`,
+                    resolutionRate: `${Math.floor(Math.random() * 20) + 70}%`,
+                    resolutionChange: `+${Math.floor(Math.random() * 10)}%`,
+                    conversationHistory: [{date: '2024-06-10', count: 50}, {date: '2024-06-11', count: 65}],
+                    satisfactionData: [{rating: 5, count: 250}, {rating: 4, count: 120}]
+                }
+            };
+            // For any other botId or a new bot, generate some random default data
+            const defaultData = {
+                totalConversations: Math.floor(Math.random() * 100),
+                conversationsChange: `+${Math.floor(Math.random() * 20)}%`,
+                messagesSent: Math.floor(Math.random() * 500),
+                messagesChange: `+${Math.floor(Math.random() * 25)}%`,
+                avgSessionDuration: `${Math.floor(Math.random() * 5)}m ${Math.floor(Math.random() * 60)}s`,
+                durationChange: `+${Math.floor(Math.random() * 10)}%`,
+                resolutionRate: `${Math.floor(Math.random() * 50) + 20}%`,
+                resolutionChange: `+${Math.floor(Math.random() * 15)}%`,
+                conversationHistory: [],
+                satisfactionData: []
+            };
+            
+            const dataToStore = sampleAnalytics[botId] || defaultData;
+            // Save this generated data to localStorage so it's somewhat persistent for the session for this bot
+            localStorage.setItem(`analytics_${botId}`, JSON.stringify(dataToStore));
+            return dataToStore;
+        }
+
+    </script>
+</body>
+</html>

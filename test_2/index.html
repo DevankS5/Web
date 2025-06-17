@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatterBox - The All-in-One Customer Service Platform</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+        body {
+            background-color: #0F0F0F;
+            color: #E0E0E0;
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            line-height: 1.6; /* Added for better readability */
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 24px; /* Slightly increased padding */
+        }
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 24px 0; /* Adjusted padding */
+            border-bottom: 1px solid #2a2a2a; /* Slightly lighter border */
+        }
+        .logo {
+            font-size: 28px; /* Increased logo size */
+            font-weight: 700; /* Bolder logo */
+        }
+        nav a {
+            color: #A0A0A0;
+            text-decoration: none;
+            margin-left: 30px; /* Increased spacing */
+            font-size: 16px;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        nav a:hover {
+            color: #fff;
+        }
+        .buttons a {
+            margin-left: 16px; /* Increased spacing */
+            padding: 12px 24px; /* Adjusted padding for better proportions */
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600; /* Slightly bolder text */
+            transition: all 0.3s ease;
+            font-size: 15px; /* Standardized font size */
+        }
+        .btn-primary {
+            background: #8A2BE2; /* Kept original gradient, but base for consistency */
+            color: #fff;
+            border: none; /* Removed border for primary */
+        }
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(138, 43, 226, 0.35); /* Enhanced shadow */
+        }
+        .btn-secondary {
+            background-color: transparent;
+            border: 1px solid #444; /* Slightly more visible border */
+            color: #E0E0E0; /* Ensure text is visible */
+        }
+        .btn-secondary:hover {
+            background-color: #1f1f1f; /* Darker hover */
+            border-color: #555;
+        }
+        .hero {
+            text-align: center;
+            padding: 100px 0 120px; /* Adjusted padding */
+            position: relative;
+        }
+        .hero-content {
+            position: relative;
+            z-index: 1;
+        }
+        .hero-image-placeholder {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            height: 600px;
+            background-color: #1a1a1a;
+            border-radius: 40px;
+            border: 3px solid #333;
+            z-index: 0;
+            opacity: 0.1;
+        }
+        .hero h1 {
+            font-size: 72px; /* Increased font size for impact */
+            margin-bottom: 24px; /* Adjusted spacing */
+            line-height: 1.15; /* Adjusted line height */
+            background: -webkit-linear-gradient(#f5f5f5, #b0b0b0); /* Brighter gradient */
+            -webkit-background-clip: text;
+            background-clip: text; /* Added standard property */
+            -webkit-text-fill-color: transparent;
+            font-weight: 700;
+        }
+        .hero p {
+            font-size: 20px;
+            margin-bottom: 48px; /* Increased spacing */
+            color: #B0B0B0; /* Slightly lighter paragraph text */
+            max-width: 640px; /* Adjusted max-width */
+            margin-left: auto;
+            margin-right: auto;
+        }
+        /* Style for the hero button, similar to header primary button */
+        .hero .btn-primary {
+            padding: 14px 32px; /* Larger padding for hero button */
+            font-size: 17px; /* Larger font size */
+            font-weight: 600;
+        }
+        .features-section h2 {
+            text-align: center;
+            font-size: 48px;
+            margin-bottom: 60px;
+        }
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 30px;
+            padding: 80px 0;
+        }
+        .feature {
+            background-color: #1A1A1A;
+            padding: 40px 30px;
+            border-radius: 12px;
+            border: 1px solid #222;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            text-align: center;
+        }
+        .feature:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.2);
+        }
+        .feature h3 {
+            font-size: 22px;
+            margin-bottom: 15px;
+        }
+        .feature p {
+            color: #A0A0A0;
+            line-height: 1.6;
+        }
+        .feature-icon {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 20px;
+            background-color: #8A2BE2;
+            display: inline-block;
+            -webkit-mask-size: contain;
+            mask-size: contain;
+            -webkit-mask-repeat: no-repeat;
+            mask-repeat: no-repeat;
+            -webkit-mask-position: center;
+            mask-position: center;
+            /* Standard mask-image property will be applied via inline styles where the image is set */
+        }
+        .business-section {
+            padding: 80px 0;
+        }
+        .business-section h2 {
+            text-align: center;
+            font-size: 40px;
+            margin-bottom: 40px;
+        }
+        .business-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+        }
+        .card {
+            background-color: #222;
+            padding: 30px;
+            border-radius: 10px;
+        }
+        .card h3 {
+            font-size: 24px;
+            margin-bottom: 10px;
+        }
+        .cta-section {
+            text-align: center;
+            padding: 100px 0; /* Increased padding */
+            background-color: #121212; /* Slightly different background for separation */
+        }
+        .cta-section h2 {
+            font-size: 48px; /* Increased font size */
+            margin-bottom: 24px; /* Adjusted spacing */
+            font-weight: 700;
+        }
+        .cta-section p {
+            font-size: 18px;
+            margin-bottom: 40px; /* Increased spacing */
+            color: #A0A0A0;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        /* Using the existing .btn-primary style for the CTA button, 
+           but ensuring it can be specifically targeted if needed or use hero's button style */
+        .cta-section .btn-primary {
+            padding: 14px 32px; 
+            font-size: 17px; 
+            font-weight: 600;
+        }
+
+        footer {
+            border-top: 1px solid #2a2a2a; /* Lighter border */
+            padding: 50px 0 30px; /* Adjusted padding */
+            text-align: center;
+            background-color: #0A0A0A; /* Darker footer background */
+        }
+        .footer-links {
+            margin-bottom: 30px; /* Increased spacing */
+        }
+        .footer-links a {
+            color: #B0B0B0; /* Lighter link color */
+            text-decoration: none;
+            margin: 0 18px; /* Adjusted spacing */
+            font-size: 15px;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        .footer-links a:hover {
+            color: #fff;
+        }
+        .social-icons {
+            margin-bottom: 30px; /* Added margin for spacing from copyright */
+        }
+        .social-icons a {
+            margin: 0 12px; /* Adjusted spacing */
+            display: inline-block; /* To allow transforms if any */
+        }
+        .social-icons img {
+            width: 24px; /* Set icon size */
+            height: 24px;
+            vertical-align: middle;
+        }
+        footer p {
+            color: #777; /* Copyright text color */
+            font-size: 14px;
+        }
+    </style>
+</head>
+<body>
+    <header class="container">
+        <div class="logo">ChatterBox</div>
+        <nav>
+            <a href="#">Product</a>
+            <a href="#">Solutions</a>
+            <a href="#">Pricing</a>
+            <a href="#">Resources</a>
+        </nav>
+        <div class="buttons">
+            <a href="embed-generator.html" class="btn-primary">Get started</a>
+            <a href="#" class="btn-secondary">Talk to sales</a>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero">
+            <div class="hero-image-placeholder"></div>
+            <div class="container hero-content">
+                <h1>The all-in-one customer service platform</h1>
+                <p>ChatterBox is the only platform you need to connect with your customers across every channel, from messaging to email to phone.</p>
+                <a href="embed-generator.html" class="btn-primary">Get started</a>
+            </div>
+        </section>
+
+        <section class="container features-section">
+            <h2>Everything you need to connect with your customers</h2>
+            <div class="features-grid">
+                <div class="feature">
+                    <div class="feature-icon" style="-webkit-mask-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2224%22 height=%2224%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22currentColor%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22><path d=%22M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z%22></path></svg>'); mask-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2224%22 height=%2224%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22currentColor%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22><path d=%22M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z%22></path></svg>');"></div>
+                    <h3>Messaging</h3>
+                    <p>Engage with customers on any messaging app.</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon" style="-webkit-mask-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2224%22 height=%2224%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22currentColor%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22><path d=%22M22 17H2a3 3 0 0 0 3-3V9a7 7 0 0 1 14 0v5a3 3 0 0 0 3 3zm-8.27 4a2 2 0 0 1-3.46 0%22></path></svg>'); mask-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2224%22 height=%2224%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22currentColor%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22><path d=%22M22 17H2a3 3 0 0 0 3-3V9a7 7 0 0 1 14 0v5a3 3 0 0 0 3 3zm-8.27 4a2 2 0 0 1-3.46 0%22></path></svg>');"></div>
+                    <h3>Team Inbox</h3>
+                    <p>Manage all your customer conversations in one place.</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon" style="-webkit-mask-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2224%22 height=%2224%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22currentColor%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22><line x1=%2212%22 y1=%2220%22 x2=%2212%22 y2=%2210%22></line><line x1=%2218%22 y1=%2220%22 x2=%2218%22 y2=%224%22></line><line x1=%226%22 y1=%2220%22 x2=%226%22 y2=%2216%22></line></svg>'); mask-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2224%22 height=%2224%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22currentColor%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22><line x1=%2212%22 y1=%2220%22 x2=%2212%22 y2=%2210%22></line><line x1=%2218%22 y1=%2220%22 x2=%2218%22 y2=%224%22></line><line x1=%226%22 y1=%2220%22 x2=%226%22 y2=%2216%22></line></svg>');"></div>
+                    <h3>Campaigns</h3>
+                    <p>Send proactive messages to your customers based on their behavior.</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon" style="-webkit-mask-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2224%22 height=%2224%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22currentColor%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22><path d=%22M12 20V10%22></path><path d=%22M18 20V4%22></path><path d=%22M6 20V16%22></path></svg>'); mask-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2224%22 height=%2224%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22currentColor%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22><path d=%22M12 20V10%22></path><path d=%22M18 20V4%22></path><path d=%22M6 20V16%22></path></svg>');"></div>
+                    <h3>Reports</h3>
+                    <p>Track your team's performance and identify areas for improvement.</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon" style="-webkit-mask-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2224%22 height=%2224%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22currentColor%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22><path d=%22M12 2l-1.45 2.9-3.2.47 2.3 2.24-.54 3.18L12 18.75l2.89 1.52-.54-3.18 2.3-2.24-3.2-.47L12 2z%22></path></svg>'); mask-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2224%22 height=%2224%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22currentColor%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22><path d=%22M12 2l-1.45 2.9-3.2.47 2.3 2.24-.54 3.18L12 18.75l2.89 1.52-.54-3.18 2.3-2.24-3.2-.47L12 2z%22></path></svg>');"></div>
+                    <h3>Automation</h3>
+                    <p>Automate your customer service with chatbots and workflows.</p>
+                </div>
+                <div class="feature">
+                    <div class="feature-icon" style="-webkit-mask-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2224%22 height=%2224%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22currentColor%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22><path d=%22M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z%22></path><polyline points=%2214 2 14 8 20 8%22></polyline><line x1=%2216%22 y1=%2213%22 x2=%228%22 y2=%2213%22></line><line x1=%2216%22 y1=%2217%22 x2=%228%22 y2=%2217%22></line><polyline points=%2210 9 9 9 8 9%22></polyline></svg>'); mask-image: url('data:image/svg+xml;charset=UTF-8,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2224%22 height=%2224%22 viewBox=%220 0 24 24%22 fill=%22none%22 stroke=%22currentColor%22 stroke-width=%222%22 stroke-linecap=%22round%22 stroke-linejoin=%22round%22><path d=%22M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z%22></path><polyline points=%2214 2 14 8 20 8%22></polyline><line x1=%2216%22 y1=%2213%22 x2=%228%22 y2=%2213%22></line><line x1=%2216%22 y1=%2217%22 x2=%228%22 y2=%2217%22></line><polyline points=%2210 9 9 9 8 9%22></polyline></svg>');"></div>
+                    <h3>Knowledge Base</h3>
+                    <p>Create a self-service knowledge base for your customers.</p>
+                </div>
+            </div>
+        </section>
+
+        <section class="business-section">
+            <div class="container">
+                <h2>See how ChatterBox can help your business</h2>
+                <div class="business-cards">
+                    <div class="card">
+                        <h3>Increase customer satisfaction</h3>
+                        <p>ChatterBox helps you provide faster, more personalized support, leading to happier customers.</p>
+                    </div>
+                    <div class="card">
+                        <h3>Improve team efficiency</h3>
+                        <p>ChatterBox streamlines your customer service workflow, enabling your team to resolve issues more quickly.</p>
+                    </div>
+                    <div class="card">
+                        <h3>Drive more sales</h3>
+                        <p>ChatterBox helps you identify and nurture leads, leading to increased sales.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="cta-section">
+            <div class="container">
+                <h2>Get started with ChatterBox today</h2>
+                <p>ChatterBox is the only platform you need to connect with your customers across every channel, from messaging to email to phone.</p>
+                <a href="embed-generator.html" class="btn-primary">Get started</a>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-links">
+                <a href="#">Product</a>
+                <a href="#">Solutions</a>
+                <a href="#">Pricing</a>
+                <a href="#">Resources</a>
+                <a href="#">About us</a>
+                <a href="#">Contact us</a>
+            </div>
+            <div class="social-icons">
+                <a href="#" aria-label="Twitter"><img src="placeholder-twitter.svg" alt="Twitter"></a>
+                <a href="#" aria-label="Facebook"><img src="placeholder-facebook.svg" alt="Facebook"></a>
+                <a href="#" aria-label="Instagram"><img src="placeholder-instagram.svg" alt="Instagram"></a>
+            </div>
+            <p>&copy; 2023 ChatterBox. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>

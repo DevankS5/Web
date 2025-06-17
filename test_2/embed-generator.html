@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot Platform</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        :root {
+            --bg-color: #0D0D0D;
+            --sidebar-bg: #1A1A1A;
+            --primary-accent: #8A2BE2; /* Purple */
+            --primary-text: #E0E0E0;
+            --secondary-text: #A0A0A0;
+            --border-color: #2A2A2A;
+            --input-bg: #0D0D0D; /* Darker input background */
+            --active-status-bg: rgba(76, 175, 80, 0.1); /* Greenish background for active */
+            --active-status-text: #4CAF50; /* Green text for active */
+            --inactive-status-bg: rgba(244, 67, 54, 0.1); /* Reddish background for inactive */
+            --inactive-status-text: #F44336; /* Red text for inactive */
+            --hover-bg: #252525;
+            --table-header-bg: #1F1F1F;
+            --search-bar-bg: #2C2C2C; /* Slightly lighter for search bar */
+        }
+        body {
+            font-family: 'Inter', sans-serif;
+            margin: 0;
+            background-color: var(--bg-color);
+            color: var(--primary-text);
+            display: flex;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+        .sidebar {
+            width: 240px;
+            background-color: var(--sidebar-bg);
+            padding: 20px;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            border-right: 1px solid var(--border-color);
+        }
+        /* Removed old .sidebar h1 style */
+        .sidebar .logo-area { /* Added from knowledge-base.html for consistency */
+            padding: 0 15px; 
+            margin-bottom: 30px;
+        }
+        .sidebar .logo-area h1 { /* Added */
+            font-size: 18px; 
+            color: #ffffff;
+            font-weight: 600;
+            margin: 0 0 5px 0;
+        }
+        .sidebar .logo-area p { /* Added */
+            font-size: 14px; 
+            color: var(--secondary-text);
+            margin: 0;
+        }
+        .sidebar nav a {
+            display: flex;
+            align-items: center;
+            color: var(--secondary-text);
+            text-decoration: none;
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-size: 15px;
+            font-weight: 500;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+        .sidebar nav a svg {
+            margin-right: 12px;
+            width: 18px;
+            height: 18px;
+            fill: currentColor;
+        }
+        .sidebar nav a:hover {
+            background-color: var(--hover-bg);
+            color: var(--primary-text);
+        }
+        .sidebar nav a.active {
+            background-color: var(--primary-accent); /* Purple for active link */
+            color: #ffffff;
+        }
+        .main-content {
+            flex-grow: 1;
+            padding: 40px;
+            height: 100vh;
+            overflow-y: auto;
+        }
+        .page { display: none; }
+        .page.active { display: block; }
+        h2 {
+            font-size: 32px;
+            color: #ffffff;
+            margin-top: 0;
+            margin-bottom: 30px; /* Added margin */
+            font-weight: 600;
+        }
+        .btn {
+            background-color: var(--primary-accent);
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .btn:hover {
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        /* Chatbots Page Specific Styles */
+        .chatbots-page-container { /* New container for layout */
+            display: flex;
+            flex-direction: column;
+            height: calc(100% - 40px); /* Adjust if padding changes */
+        }
+
+        .chatbots-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .search-bar-container {
+            position: relative;
+            width: 300px; /* Adjust as needed */
+        }
+
+        .search-bar-container input[type="search"] {
+            background-color: var(--search-bar-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--primary-text);
+            padding: 10px 15px 10px 40px; /* Padding for icon */
+            font-size: 14px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        .search-bar-container input[type="search"]::placeholder {
+            color: var(--secondary-text);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+            fill: var(--secondary-text);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 25px;
+            border-bottom: 1px solid var(--border-color); /* Line below tabs */
+        }
+
+        .tabs button {
+            background: none;
+            border: none;
+            color: var(--secondary-text);
+            padding: 10px 15px; /* Adjusted padding */
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 500;
+            border-bottom: 2px solid transparent; /* For active state */
+            transition: color 0.3s ease, border-color 0.3s ease;
+        }
+
+        .tabs button:hover {
+            color: var(--primary-text);
+        }
+
+        .tabs button.active {
+            color: var(--primary-accent); /* Purple for active tab */
+            border-bottom-color: var(--primary-accent);
+        }
+
+        .chatbot-table-container {
+            flex-grow: 1; /* Allows table to take remaining space */
+            overflow-y: auto; /* Scroll for table content */
+            background-color: var(--sidebar-bg); /* Match image background */
+            border-radius: 8px;
+            padding: 20px;
+        }
+        
+        .chatbot-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .chatbot-table th, .chatbot-table td {
+            padding: 15px; /* Increased padding */
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 14px;
+        }
+        .chatbot-table th:last-child { /* Corrected selector */
+            text-align: right;
+        }
+
+        .chatbot-table th {
+            color: var(--secondary-text);
+            font-weight: 500;
+            background-color: var(--table-header-bg); /* Darker header */
+        }
+        .chatbot-table th:first-child {
+            border-top-left-radius: 8px;
+        }
+        .chatbot-table th:last-child {
+            border-top-right-radius: 8px;
+        }
+
+
+        .chatbot-table td {
+            color: var(--primary-text);
+        }
+        .chatbot-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 12px; /* Pill shape */
+            font-size: 12px;
+            font-weight: 500;
+            display: inline-block;
+        }
+
+        .status-badge.active {
+            background-color: var(--active-status-bg);
+            color: var(--active-status-text);
+            border: 1px solid var(--active-status-text);
+        }
+
+        .status-badge.inactive {
+            background-color: var(--inactive-status-bg); /* Added for consistency */
+            color: var(--inactive-status-text); /* Added for consistency */
+            border: 1px solid var(--inactive-status-text);
+        }
+
+        .actions-cell-content { /* New class for flex layout */
+            display: flex;
+            align-items: center;
+            justify-content: flex-end; /* Align items to the right */
+            gap: 8px; /* Space between Edit text and icons */
+        }
+
+        .action-btn {
+            background: none;
+            border: none;
+            color: var(--secondary-text);
+            cursor: pointer;
+            padding: 5px;
+            /* margin-left: 10px; Removed to use gap in flex container */
+            font-size: 14px;
+            transition: color 0.3s ease;
+        }
+        .action-btn:hover {
+            color: var(--primary-text);
+        }
+        .action-btn svg {
+            width: 16px;
+            height: 16px;
+            fill: currentColor;
+            vertical-align: middle;
+        }
+        .edit-btn-text {
+             color: var(--secondary-text);
+             text-decoration: none;
+             transition: color 0.3s ease;
+        }
+        .edit-btn-text:hover {
+            color: var(--primary-accent);
+        }
+
+        .new-chatbot-btn-container {
+            padding-top: 20px; /* Space above the button */
+            border-top: 1px solid var(--border-color);
+            margin-top: auto; /* Pushes button to bottom if inside flex container */
+            background-color: var(--bg-color); /* Match page background */
+            position: sticky; /* Stick to bottom of main-content */
+            bottom: 0;
+            padding-bottom: 20px; /* Padding at the very bottom */
+
+        }
+        .new-chatbot-btn {
+            background-color: var(--primary-accent);
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 15px;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+            width: 100%; /* Make button full width */
+        }
+        .new-chatbot-btn:hover {
+            opacity: 0.9;
+        }
+
+        /* Customization Page */
+        .customization-content {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 40px;
+        }
+        .form-section {
+            background-color: var(--sidebar-bg);
+            padding: 25px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+            border: 1px solid var(--border-color);
+        }
+        .form-section h3 {
+            margin-top: 0;
+            font-size: 20px;
+            color: #ffffff;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+        .form-group { margin-bottom: 20px; }
+        .form-group-inline {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .btn-group button {
+            background-color: var(--input-bg);
+            border: 1px solid #333;
+            color: var(--secondary-text);
+            padding: 10px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.3s, color 0.3s;
+        }
+        .btn-group button.active {
+            background-color: var(--primary-accent);
+            color: white;
+            border-color: var(--primary-accent);
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--secondary-text);
+        }
+        input[type="text"], input[type="url"], input[type="color"], select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #333;
+            border-radius: 6px;
+            box-sizing: border-box;
+            background-color: var(--input-bg);
+            color: var(--primary-text);
+            font-size: 14px;
+        }
+        textarea {
+            min-height: 100px;
+            font-family: monospace;
+            white-space: pre;
+            overflow-x: auto;
+        }
+        #generated-code {
+            background-color: #000;
+            border: 1px solid var(--border-color);
+        }
+
+        /* Embed Code Area */
+        #generated-code-area {
+            position: sticky;
+            top: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo-area">
+            <h1>Chatbot Builder</h1>
+            <p>Acme Co</p>
+        </div>
+        <nav>
+            <a href="index.html">
+                <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+                Overview
+            </a>
+            <a href="knowledge-base.html">
+                <svg viewBox="0 0 24 24"><path d="M14 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/></svg>
+                Knowledge Base
+            </a>
+            <a href="#"> <!-- Placeholder -->
+                <svg viewBox="0 0 24 24"><path d="M19 3H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-2 10h-3v3h-2v-3H9v-2h3V8h2v3h3v2z"/></svg>
+                Playground
+            </a>
+            <a href="#"> <!-- Placeholder -->
+                <svg viewBox="0 0 24 24"><path d="M13 7h-2v2h2V7zm0 4h-2v2h2v-2zm4 0h-2v2h2v-2zm-4 5h-2v2h2v-2zM5 21h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2zM7 5h10v14H7V5z"/></svg>
+                Integrations
+            </a>
+            <a href="#chatbots" onclick="showPage('chatbots')"> <!-- Changed to base ID -->
+                <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm0 14H6l-2 2V4h16v12z"/></svg>
+                Chatbots
+            </a>
+            <a href="#settings" onclick="showPage('settings')"> <!-- Changed to base ID -->
+                <svg viewBox="0 0 24 24"><path d="M19.43 12.98c.04-.32.07-.64.07-.98s-.03-.66-.07-.98l2.11-1.65c.19-.15.24-.42.12-.64l-2-3.46c-.12-.22-.39-.3-.61-.22l-2.49 1c-.52-.4-1.08-.73-1.69-.98l-.38-2.65C14.46 2.18 14.25 2 14 2h-4c-.25 0-.46.18-.49.42l-.38 2.65c-.61.25-1.17.59-1.69.98l-2.49-1c-.23-.09-.49 0-.61.22l-2 3.46c-.13.22-.07.49.12.64l2.11 1.65c.04.32.07.65.07.98s-.03.66-.07.98l-2.11 1.65c-.19-.15-.24-.42.12.64l2 3.46c.12.22.39.3.61-.22l2.49-1c.52.4 1.08.73 1.69.98l.38 2.65c.03.24.24.42.49.42h4c.25 0 .46-.18.49-.42l.38-2.65c.61-.25 1.17-.59 1.69-.98l2.49 1c.23.09.49 0 .61-.22l2 3.46c.13.22.07.49.12.64l-2.11-1.65zM12 15.5c-1.93 0-3.5-1.57-3.5-3.5s1.57-3.5 3.5-3.5 3.5 1.57 3.5 3.5-1.57 3.5-3.5 3.5z"/></svg>
+                Settings
+            </a>
+            <a href="#help" onclick="showPage('help')"> <!-- NEW HELP LINK -->
+                <svg viewBox="0 0 24 24"><path d="M11 18h2v-2h-2v2zm1-16C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm0-14c-2.21 0-4 1.79-4 4h2c0-1.1.9-2 2-2s2 .9 2 2c0 2-3 1.75-3 5h2c0-2.25 3-2.5 3-5 0-2.21-1.79-4-4-4z"/></svg>
+                Help
+            </a>
+        </nav>
+    </div>
+
+    <div class="main-content">
+        <!-- Chatbots List Page -->
+        <div id="chatbots-page" class="page">
+            <h2>Chatbots</h2>
+            <div class="chatbots-page-container">
+                <div class="chatbots-controls">
+                    <div class="search-bar-container">
+                        <svg class="search-icon" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0 0 16 9.5 6.5 6.5 0 1 0 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+                        <input type="search" id="chatbot-search" placeholder="Search chatbots...">
+                    </div>
+                </div>
+                <div class="tabs">
+                    <button class="active" onclick="filterChatbots('All')">All</button>
+                    <button onclick="filterChatbots('Active')">Active</button>
+                    <button onclick="filterChatbots('Inactive')">Inactive</button>
+                </div>
+                <div class="chatbot-table-container">
+                    <table class="chatbot-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Status</th>
+                                <th>Last Updated</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="chatbots-table-body">
+                            <!-- Chatbot rows will be dynamically inserted here -->
+                        </tbody>
+                    </table>
+                </div>
+                <div class="new-chatbot-btn-container">
+                    <button class="new-chatbot-btn" onclick="prepareNewChatbot()">New Chatbot</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Placeholder for Analytics Page -->
+        <div id="analytics-page" class="page" style="display: none;">
+            <h2>Analytics</h2>
+            <p>Analytics content will go here. This page is linked per chatbot from the chatbots list.</p>
+        </div>
+        <!-- Placeholder for Settings Page -->
+        <div id="settings-page" class="page" style="display: none;">
+            <h2>Settings</h2>
+            <p>Settings content will go here.</p>
+        </div>
+        <!-- Placeholder for Help Page -->
+        <div id="help-page" class="page" style="display: none;"> <!-- NEW HELP PAGE SECTION -->
+            <h2>Help & Documentation</h2>
+            <p>Find answers to common questions and learn how to use the platform.</p>
+            <!-- Add more detailed help content, FAQs, links to documentation, etc. here -->
+        </div>
+
+
+        <!-- Chatbot Customization Page (existing, may need minor adjustments later) -->
+        <div id="customization-page" class="page">
+             <h2 id="customization-page-title">Chatbot Customization</h2> 
+             <div class="tabs" style="margin-bottom: 30px;">
+                <button class="active" onclick="switchCustomizationTab(event, 'appearance')">Appearance</button>
+                <button onclick="switchCustomizationTab(event, 'content')">Content</button>
+            </div>
+            <div class="customization-content">
+                <div class="customization-form">
+                    <div class="form-section" id="appearance-section">
+                        <h3>Chatbot Details</h3>
+                        <div class="form-group">
+                            <label for="chatbot-display-name">Chatbot Name</label>
+                            <input type="text" id="chatbot-display-name" placeholder="Enter a unique name for your chatbot">
+                        </div>
+                    </div>
+                    <div class="form-section" id="appearance-section-theme"> <!-- Unique ID for theme section -->
+                        <h3>Chatbot Theme</h3>
+                        <div class="form-group">
+                            <label>Theme</label>
+                            <div class="btn-group" id="theme-btn-group">
+                                <button>Light</button>
+                                <button>Dark</button>
+                                <button class="active">Custom</button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="theme-color">Chatbot Colors</label>
+                            <div class="form-group-inline">
+                                <input type="color" id="theme-color" value="#8A2BE2" style="width: 50px; padding: 5px;">
+                                <span id="theme-color-value">#8A2BE2</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- <div class="form-section" id="appearance-section-look"> 
+                        <h3>Chatbot Appearance</h3>
+                        <div class="form-group">
+                            <label for="chatbot-font">Chatbot Font</label>
+                            <input type="text" id="chatbot-font" placeholder="e.g., \'Inter\', sans-serif">
+                        </div>
+                        <div class="form-group">
+                            <label>Chatbot Layout</label>
+                             <div class="btn-group" id="layout-btn-group">
+                                <button>Compact</button>
+                                <button class="active">Standard</button>
+                                <button>Expanded</button>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label for="chatbot-avatar">Chatbot Avatar</label>
+                            <input type="url" id="chatbot-avatar" placeholder="Enter image URL">
+                        </div>
+                    </div> -->
+                     <div class="form-section" id="configuration-section"> <!-- Unique ID for config section -->
+                        <h3>Configuration</h3>
+                        <div class="form-group">
+                            <label for="chatbot-id">Chatbot ID</label>
+                            <input type="text" id="chatbot-id" value="my-unique-bot-001">
+                        </div>
+                        <div class="form-group">
+                             <label for="widget-js-url">Widget JS URL</label>
+                             <input type="url" id="widget-js-url" value="https://your-cdn.com/your-chatbot-widget.esm.js">
+                             <small style="color: var(--secondary-text); font-size: 12px; margin-top: 5px; display: block;">
+                                Enter the base URL where <code>your-chatbot-widget.esm.js</code> is hosted. For local testing, ensure the server allows cross-origin requests (CORS).
+                            </small>
+                        </div>
+                        <div class="form-group">
+                            <label>Display Mode</label>
+                            <select id="is-popup">
+                                <option value="true" selected>Popup Launcher</option>
+                                <option value="false">Inline</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="width">Width (e.g., 350px, 100%)</label>
+                            <input type="text" id="width" value="350px">
+                        </div>
+                        <div class="form-group">
+                            <label for="height">Height (e.g., 500px, 450px)</label>
+                            <input type="text" id="height" value="500px">
+                        </div>
+                         <div class="form-group">
+                            <label for="welcome-message">Welcome Message</label>
+                            <textarea id="welcome-message" rows="3">Hello! How can I assist you today?</textarea>
+                        </div>
+                     </div>
+                     <button class="btn" onclick="saveChatbot()" style="margin-top: 20px; width: 100%;">Save Chatbot</button>
+                </div>
+                <div id="generated-code-area" class="form-section">
+                    <h3>Embed Code</h3>
+                    <p style="color: var(--secondary-text); font-size: 14px; margin-top: -10px; margin-bottom: 20px;">Copy and paste this code into your website's HTML.</p>
+                    <textarea id="generated-code" readonly rows="10"></textarea>
+                    <button class="btn" onclick="copyToClipboard()" style="margin-top:15px; width: 100%;">Copy Code</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function showPage(basePageId, isInitialLoad = false) {
+            document.querySelectorAll('.main-content .page').forEach(page => {
+                page.style.display = 'none';
+                page.classList.remove('active');
+            });
+
+            const fullElementId = basePageId + '-page';
+            const targetPage = document.getElementById(fullElementId);
+
+            if (targetPage) {
+                targetPage.style.display = 'block';
+                targetPage.classList.add('active');
+                // Update hash only if it's different and not for customization sub-page logic
+                if (window.location.hash !== `#${basePageId}` && basePageId !== 'customization') { 
+                     // window.location.hash = basePageId; // Keep this commented or manage carefully
+                }
+            } else {
+                console.warn(`Page element not found for ID: ${fullElementId}. Defaulting to chatbots page.`);
+                const chatbotsPage = document.getElementById('chatbots-page');
+                if (chatbotsPage) {
+                    chatbotsPage.style.display = 'block';
+                    chatbotsPage.classList.add('active');
+                    if (basePageId === 'chatbots' || isInitialLoad) renderChatbots(); // Render if defaulting to or initially loading chatbots
+                }
+                return; 
+            }
+
+            // Update active sidebar link
+            document.querySelectorAll('.sidebar nav a').forEach(link => link.classList.remove('active'));
+            
+            let pageIdForLinkActivation = basePageId;
+            if (basePageId === 'customization') { 
+                pageIdForLinkActivation = 'chatbots'; // 'Chatbots' link is active for customization page
+            }
+
+            const activeLink = Array.from(document.querySelectorAll('.sidebar nav a')).find(link => {
+                const onclickAttr = link.getAttribute('onclick');
+                if (onclickAttr && onclickAttr.includes(`showPage('${pageIdForLinkActivation}')`)) {
+                    return true;
+                }
+                // Handle overview/home link which navigates away
+                if (pageIdForLinkActivation === 'home' && link.getAttribute('href') === 'index.html') { 
+                    return true;
+                }
+                // Handle knowledge base link
+                if (pageIdForLinkActivation === 'knowledge-base' && link.getAttribute('href') === 'knowledge-base.html') {
+                    return true;
+                }
+                return false;
+            });
+            if (activeLink) {
+                activeLink.classList.add('active');
+            }
+            
+            // Page-specific actions
+            if (basePageId === 'customization') {
+                // Ensure currentEditingChatbotName is set if editing, or clear if creating new
+                const botNameForTitle = editingChatbotId ? chatbots.find(b => b.id === editingChatbotId)?.name : document.getElementById('chatbot-display-name').value;
+                document.getElementById('customization-page-title').textContent = editingChatbotId ? `Editing: ${botNameForTitle}` : 'Create New Chatbot';
+                // Ensure the "Appearance" tab is active by default when navigating to customization
+                switchCustomizationTab({ currentTarget: document.querySelector('#customization-page .tabs button[onclick*="appearance"]') }, 'appearance', true);
+                generateEmbedCode(); 
+            } else if (basePageId === 'chatbots') {
+                renderChatbots();
+            } else if (basePageId === 'help') {
+                // Placeholder for any specific logic needed when Help page is shown
+                console.log("Help page loaded.");
+            }
+            // Add other page specific actions here, e.g., for 'settings'
+            // else if (basePageId === 'settings') { /* loadSettings(); */ }
+        }
+
+        // ===================================================================================
+        // CHATBOT MANAGEMENT LOGIC
+        // ===================================================================================
+        let chatbots = []; 
+
+        function loadChatbotsFromLocalStorage() {
+            const storedChatbots = localStorage.getItem('chatbots');
+            if (storedChatbots) {
+                chatbots = JSON.parse(storedChatbots);
+            } else {
+                chatbots = [
+                    { id: 'bot1', name: 'Customer Support Bot', technicalId: 'cs-001', status: 'Active', lastUpdated: '2023-09-15', welcomeMessage: 'Hi there! How can I help with support?', theme: 'Light', themeColor: '#3498db', font: "'Roboto', sans-serif", layout: 'Standard', avatar: '', width: '360px', height: '520px', isPopup: 'true', widgetJsUrl: './your-chatbot-widget.esm.js' },
+                    { id: 'bot2', name: 'Sales Assistant Bot', technicalId: 'sales-002', status: 'Inactive', lastUpdated: '2023-08-22', welcomeMessage: 'Hello! Interested in our products?', theme: 'Dark', themeColor: '#e74c3c', font: "'Open Sans', sans-serif", layout: 'Compact', avatar: '', width: '340px', height: '480px', isPopup: 'true', widgetJsUrl: './your-chatbot-widget.esm.js' },
+                    { id: 'bot3', name: 'Marketing Bot', technicalId: 'mktg-003', status: 'Active', lastUpdated: '2023-09-01', welcomeMessage: 'Greetings! Discover our latest offers.', theme: 'Custom', themeColor: '#8A2BE2', font: "'Inter', sans-serif", layout: 'Expanded', avatar: '', width: '380px', height: '550px', isPopup: 'false', widgetJsUrl: './your-chatbot-widget.esm.js' },
+                ];
+                saveChatbotsToLocalStorage(); 
+            }
+        }
+
+        function saveChatbotsToLocalStorage() {
+            localStorage.setItem('chatbots', JSON.stringify(chatbots));
+        }
+
+        loadChatbotsFromLocalStorage();
+
+        let currentFilter = 'All';
+        let editingChatbotId = null; 
+        let currentEditingChatbotName = ''; 
+
+        function switchCustomizationTab(event, tabName, isProgrammaticCall = false) {
+            if (!event && !isProgrammaticCall) return; // Should not happen if called correctly
+
+            document.querySelectorAll('#customization-page .tabs button').forEach(button => button.classList.remove('active'));
+            
+            let targetButton;
+            if (event && event.currentTarget) {
+                targetButton = event.currentTarget;
+            } else if (isProgrammaticCall && tabName === 'appearance') {
+                // If called programmatically for 'appearance', find that button
+                targetButton = document.querySelector('#customization-page .tabs button[onclick*="appearance"]');
+            }
+            
+            if (targetButton) {
+                targetButton.classList.add('active');
+            }
+
+
+            // Hide all customization form sections first
+            document.getElementById('appearance-section-theme').style.display = 'none';
+            // document.getElementById('appearance-section-look').style.display = 'none'; // Commented out
+            document.getElementById('configuration-section').style.display = 'none';
+            // The main 'appearance-section' (for chatbot name) should always be visible if on customization page
+            document.getElementById('appearance-section').style.display = 'block';
+
+
+            if (tabName === 'appearance') {
+                document.getElementById('appearance-section-theme').style.display = 'block';
+                // document.getElementById('appearance-section-look').style.display = 'block'; // Commented out
+                document.getElementById('configuration-section').style.display = 'block';
+            } else if (tabName === 'content') {
+                const bot = editingChatbotId ? chatbots.find(b => b.id === editingChatbotId) : null;
+                const botName = bot ? bot.name : (document.getElementById('chatbot-display-name').value || "this chatbot");
+                const botIdForContent = bot ? bot.id : null;
+
+                if (botIdForContent) {
+                     window.location.href = `knowledge-base.html?botId=${botIdForContent}&botName=${encodeURIComponent(botName)}`;
+                } else {
+                    // If creating a new bot and "Content" is clicked before saving,
+                    // it's better to prompt to save first, or go to a generic knowledge base page.
+                    // For now, let's go to the generic knowledge base page.
+                    alert("Please save the chatbot first to manage its specific content. Navigating to the general Knowledge Base.");
+                    window.location.href = 'knowledge-base.html';
+                }
+            }
+        }
+
+        function renderChatbots() {
+            const tableBody = document.getElementById('chatbots-table-body');
+            if (!tableBody) return;
+            tableBody.innerHTML = ''; 
+
+            const searchTerm = document.getElementById('chatbot-search').value.toLowerCase();
+
+            const filteredChatbots = chatbots.filter(bot => {
+                const matchesFilter = currentFilter === 'All' || bot.status === currentFilter;
+                const matchesSearch = bot.name.toLowerCase().includes(searchTerm);
+                return matchesFilter && matchesSearch;
+            });
+
+            if (filteredChatbots.length === 0) {
+                const row = tableBody.insertRow();
+                const cell = row.insertCell();
+                cell.colSpan = 4;
+                cell.textContent = 'No chatbots found.';
+                cell.style.textAlign = 'center';
+                cell.style.padding = '20px';
+            } else {
+                filteredChatbots.forEach(bot => {
+                    const row = tableBody.insertRow();
+                    row.insertCell().textContent = bot.name;
+                    
+                    const statusCell = row.insertCell();
+                    const statusBadge = document.createElement('span');
+                    statusBadge.className = `status-badge ${bot.status.toLowerCase()}`;
+                    statusBadge.textContent = bot.status;
+                    statusCell.appendChild(statusBadge);
+
+                    row.insertCell().textContent = bot.lastUpdated;
+
+                    const actionsCell = row.insertCell();
+                    actionsCell.style.textAlign = 'right'; // Align actions to the right
+
+                    const actionsCellContent = document.createElement('div'); 
+                    actionsCellContent.className = 'actions-cell-content';
+                    
+                    const editLink = document.createElement('a');
+                    editLink.href = '#';
+                    editLink.className = 'edit-btn-text';
+                    editLink.textContent = 'Edit';
+                    editLink.onclick = (e) => {
+                        e.preventDefault();
+                        editChatbot(bot.id);
+                    };
+                    actionsCellContent.appendChild(editLink);
+
+                    const analyticsBtn = document.createElement('button');
+                    analyticsBtn.className = 'action-btn';
+                    analyticsBtn.title = 'Analytics'; 
+                    analyticsBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zM9 17H7v-7h2v7zm4 0h-2V7h2v10zm4 0h-2v-4h2v4z"/></svg>'; 
+                    analyticsBtn.onclick = () => {
+                        window.location.href = `chatbot-analytics.html?botId=${bot.id}&botName=${encodeURIComponent(bot.name)}`;
+                    };
+                    actionsCellContent.appendChild(analyticsBtn);
+
+                    const deleteBtn = document.createElement('button');
+                    deleteBtn.className = 'action-btn';
+                    deleteBtn.innerHTML = '<svg viewBox="0 0 24 24"><path d="M6 19c0 1.1.9 2 2 2h8c1.1 0 2-.9 2-2V7H6v12zM19 4h-3.5l-1-1h-5l-1 1H5v2h14V4z"/></svg>'; 
+                    deleteBtn.onclick = () => deleteChatbot(bot.id);
+                    actionsCellContent.appendChild(deleteBtn);
+
+                    actionsCell.appendChild(actionsCellContent); 
+                });
+            }
+        }
+
+        function filterChatbots(filter) {
+            currentFilter = filter;
+            document.querySelectorAll('.tabs button').forEach(button => button.classList.remove('active'));
+            document.querySelector(`.tabs button[onclick="filterChatbots('${filter}')"]`).classList.add('active');
+            renderChatbots();
+        }
+        
+        document.getElementById('chatbot-search').addEventListener('input', renderChatbots);
+
+        function prepareNewChatbot() {
+            editingChatbotId = null; 
+            currentEditingChatbotName = '';
+
+            let newBotName = prompt("Enter a name for your new chatbot:");
+
+            if (!newBotName || !newBotName.trim()) {
+                alert("Chatbot name cannot be empty.");
+                return;
+            }
+            newBotName = newBotName.trim();
+
+            if (chatbots.some(bot => bot.name === newBotName)) {
+                alert("A chatbot with this name already exists. Please choose a different name.");
+                return;
+            }
+
+            document.getElementById('customization-page-title').textContent = 'Create New Chatbot';
+            document.getElementById('chatbot-display-name').value = newBotName;
+            
+            document.getElementById('chatbot-id').value = `bot-${Date.now().toString().slice(-6)}`; 
+            document.getElementById('welcome-message').value = 'Hello! How can I assist you today?';
+            document.getElementById('theme-color').value = '#8A2BE2';
+            document.getElementById('theme-color-value').textContent = '#8A2BE2';
+            
+            document.querySelectorAll('#theme-btn-group button').forEach(btn => btn.classList.remove('active'));
+            document.querySelector('#theme-btn-group button:nth-child(3)').classList.add('active'); 
+            
+            // document.getElementById('chatbot-font').value = "'Inter', sans-serif"; // Commented out
+            
+            // document.querySelectorAll('#layout-btn-group button').forEach(btn => btn.classList.remove('active')); // Commented out
+            // document.querySelector('#layout-btn-group button:nth-child(2)').classList.add('active'); // Commented out
+            // document.getElementById('chatbot-avatar').value = ''; // Commented out
+
+            document.getElementById('width').value = '350px';
+            document.getElementById('height').value = '500px';
+            document.getElementById('is-popup').value = 'true';
+            document.getElementById('widget-js-url').value = './your-chatbot-widget.esm.js'; // Default to local
+            
+            showPage('customization');
+        }
+
+        function editChatbot(botId) {
+            editingChatbotId = botId;
+            const bot = chatbots.find(b => b.id === botId);
+            if (bot) {
+                currentEditingChatbotName = bot.name; // Store name for content tab
+                document.getElementById('customization-page-title').textContent = `Editing: ${bot.name}`;
+                document.getElementById('chatbot-display-name').value = bot.name;
+                document.getElementById('chatbot-id').value = bot.technicalId || bot.id; 
+                
+                document.getElementById('welcome-message').value = bot.welcomeMessage || 'Hello! How can I assist you today?';
+                document.getElementById('theme-color').value = bot.themeColor || '#8A2BE2';
+                document.getElementById('theme-color-value').textContent = bot.themeColor || '#8A2BE2';
+                
+                const themeButtons = document.querySelectorAll('#theme-btn-group button');
+                themeButtons.forEach(btn => btn.classList.remove('active'));
+                const currentTheme = bot.theme || 'Custom'; 
+                let themeButtonToActivate = Array.from(themeButtons).find(btn => btn.textContent === currentTheme);
+                if (!themeButtonToActivate) themeButtonToActivate = themeButtons[2]; 
+                themeButtonToActivate.classList.add('active');
+
+                // document.getElementById('chatbot-font').value = bot.font || "'Inter', sans-serif"; // Commented out
+                
+                // const layoutButtons = document.querySelectorAll('#layout-btn-group button'); // Commented out
+                // layoutButtons.forEach(btn => btn.classList.remove('active')); // Commented out
+                // const currentLayout = bot.layout || 'Standard';  // Commented out
+                // let layoutButtonToActivate = Array.from(layoutButtons).find(btn => btn.textContent === currentLayout); // Commented out
+                // if (!layoutButtonToActivate) layoutButtonToActivate = layoutButtons[1];  // Commented out
+                // layoutButtonToActivate.classList.add('active'); // Commented out
+
+                document.getElementById('width').value = bot.width || '350px';
+                document.getElementById('height').value = bot.height || '500px';
+                document.getElementById('is-popup').value = bot.isPopup !== undefined ? bot.isPopup.toString() : 'true';
+                document.getElementById('widget-js-url').value = bot.widgetJsUrl || './your-chatbot-widget.esm.js';
+
+                showPage('customization');
+            }
+        }
+
+        function saveChatbot() { 
+            const displayName = document.getElementById('chatbot-display-name').value.trim();
+            const technicalId = document.getElementById('chatbot-id').value.trim(); 
+            
+            if (!displayName) {
+                alert('Chatbot Name cannot be empty.');
+                return;
+            }
+            if (!technicalId) {
+                alert('Chatbot ID (for embed code) cannot be empty.');
+                return;
+            }
+
+            const themeColor = document.getElementById('theme-color').value;
+            const activeThemeButton = document.querySelector('#theme-btn-group button.active');
+            const theme = activeThemeButton ? activeThemeButton.textContent : 'Custom';
+            const welcomeMessage = document.getElementById('welcome-message').value;
+            const width = document.getElementById('width').value;
+            const height = document.getElementById('height').value;
+            const isPopup = document.getElementById('is-popup').value;
+            const widgetJsUrl = document.getElementById('widget-js-url').value;
+
+            const now = new Date().toISOString().split('T')[0]; 
+
+            if (editingChatbotId) { 
+                const botIndex = chatbots.findIndex(b => b.id === editingChatbotId);
+                if (botIndex > -1) {
+                    if (chatbots.some(b => b.name === displayName && b.id !== editingChatbotId)) {
+                        alert('Another chatbot with this name already exists.');
+                        return;
+                    }
+                    chatbots[botIndex].name = displayName;
+                    chatbots[botIndex].technicalId = technicalId;
+                    chatbots[botIndex].lastUpdated = now;
+                    chatbots[botIndex].status = chatbots[botIndex].status || 'Active'; 
+                    chatbots[botIndex].welcomeMessage = welcomeMessage;
+                    chatbots[botIndex].theme = theme;
+                    chatbots[botIndex].themeColor = themeColor;
+                    // chatbots[botIndex].font = font; // Commented out
+                    // chatbots[botIndex].layout = layout; // Commented out
+                    // chatbots[botIndex].avatar = avatar; // Commented out
+                    chatbots[botIndex].width = width;
+                    chatbots[botIndex].height = height;
+                    chatbots[botIndex].isPopup = isPopup;
+                    chatbots[botIndex].widgetJsUrl = widgetJsUrl;
+                }
+            } else { 
+                if (chatbots.some(b => b.name === displayName)) {
+                    alert('A chatbot with this name already exists.'); 
+                    return;
+                }
+                const newBot = {
+                    id: `botid-${Date.now()}`, 
+                    name: displayName,
+                    technicalId: technicalId, 
+                    status: 'Active', 
+                    lastUpdated: now,
+                    welcomeMessage: welcomeMessage,
+                    theme: theme,
+                    themeColor: themeColor,
+                    // font: font, // Commented out
+                    // layout: layout, // Commented out
+                    // avatar: avatar, // Commented out
+                    width: width,
+                    height: height,
+                    isPopup: isPopup,
+                    widgetJsUrl: widgetJsUrl,
+                };
+                chatbots.push(newBot);
+            }
+            saveChatbotsToLocalStorage(); 
+            editingChatbotId = null;
+            currentEditingChatbotName = '';
+            showPage('chatbots'); 
+        }
+        
+        function deleteChatbot(botId) {
+            if (confirm('Are you sure you want to delete this chatbot?')) {
+                chatbots = chatbots.filter(bot => bot.id !== botId);
+                saveChatbotsToLocalStorage(); 
+                renderChatbots();
+            }
+        }
+        
+        document.getElementById('theme-color').addEventListener('input', (event) => {
+            document.getElementById('theme-color-value').textContent = event.target.value;
+            generateEmbedCode();
+        });
+
+        document.querySelectorAll('#theme-btn-group button').forEach(button => { // Removed #layout-btn-group
+            button.addEventListener('click', (event) => {
+                const group = event.target.closest('.btn-group');
+                group.querySelectorAll('button').forEach(btn => btn.classList.remove('active'));
+                event.target.classList.add('active');
+                generateEmbedCode();
+            });
+        });
+
+        ['chatbot-id', 'widget-js-url', 'is-popup', 'width', 'height', 'welcome-message'].forEach(id => { // Removed 'chatbot-font', 'chatbot-avatar'
+            const element = document.getElementById(id);
+            if (element) {
+                element.addEventListener('input', generateEmbedCode);
+                if (element.tagName === 'SELECT') {
+                     element.addEventListener('change', generateEmbedCode);
+                }
+            }
+        });
+
+
+        document.addEventListener('DOMContentLoaded', () => {
+            loadChatbotsFromLocalStorage(); 
+
+            let initialBasePage = 'chatbots'; 
+            if (window.location.hash) {
+                const hash = window.location.hash.substring(1); 
+                const validBasePageIds = ['chatbots', 'customization', 'settings', 'analytics', 'help']; // UPDATED
+                if (validBasePageIds.includes(hash)) {
+                    initialBasePage = hash;
+                } else if (hash.startsWith('customization?botId=')) { // Handle direct link to customization
+                    initialBasePage = 'customization';
+                    const urlParams = new URLSearchParams(hash.split('?')[1]);
+                    const botId = urlParams.get('botId');
+                    if (botId) {
+                        // Attempt to load this specific bot for editing
+                        // This requires chatbots to be loaded first
+                        const botToEdit = chatbots.find(b => b.id === botId || b.technicalId === botId);
+                        if (botToEdit) {
+                            editingChatbotId = botToEdit.id; // Set for editChatbot
+                            // editChatbot(botToEdit.id); // Call editChatbot to populate form
+                        } else {
+                            console.warn("Bot ID from hash not found, defaulting to chatbots list.");
+                            initialBasePage = 'chatbots'; // Fallback if bot not found
+                        }
+                    }
+                }
+            }
+            
+            // If initial page is customization and we have an editingChatbotId, call editChatbot
+            if (initialBasePage === 'customization' && editingChatbotId) {
+                editChatbot(editingChatbotId); // This will also call showPage('customization')
+            } else {
+                showPage(initialBasePage, true); 
+            }
+        });
+        
+        function generateEmbedCode() {
+            const chatbotId = document.getElementById('chatbot-id').value; 
+            let baseUrl = document.getElementById('widget-js-url').value;
+            const isPopup = document.getElementById('is-popup').value;
+            const width = document.getElementById('width').value;
+            const height = document.getElementById('height').value;
+            const themeColor = document.getElementById('theme-color').value;
+            const welcomeMessage = document.getElementById('welcome-message').value;
+
+            const activeThemeButton = document.querySelector('#theme-btn-group button.active');
+            const theme = activeThemeButton ? activeThemeButton.textContent : 'Custom';
+            // const font = document.getElementById('chatbot-font').value.trim(); // Commented out
+            // const activeLayoutButton = document.querySelector('#layout-btn-group button.active'); // Commented out
+            // const layout = activeLayoutButton ? activeLayoutButton.textContent : 'Standard'; // Commented out
+            // const avatar = document.getElementById('chatbot-avatar').value.trim(); // Commented out
+
+            if (!baseUrl.startsWith('http://') && !baseUrl.startsWith('https://') && !baseUrl.startsWith('./') && !baseUrl.startsWith('../') && !baseUrl.startsWith('/')) {
+                baseUrl = './' + baseUrl; // Assume relative to current dir if no scheme or relative path start
+            }
+            
+            // More robustly determine the final widget URL
+            let finalWidgetUrl;
+            try {
+                // If baseUrl is already a full URL to the script, use it directly
+                if (baseUrl.endsWith('.js')) {
+                    finalWidgetUrl = new URL(baseUrl, window.location.href).href;
+                } else {
+                    // If baseUrl is a directory, append the script name
+                    const tempUrl = new URL(baseUrl, window.location.href);
+                    finalWidgetUrl = new URL('your-chatbot-widget.esm.js', tempUrl).href;
+                }
+            } catch (e) {
+                console.error("Error constructing widget URL:", e);
+                finalWidgetUrl = "ERROR_INVALID_WIDGET_URL"; // Fallback
+            }
+
+
+            const scriptTag = `<script async type="module" src="${finalWidgetUrl}"><\/script>`;
+            const embedTag = `<your-chatbot-embed
+    chatbot-id="${chatbotId}"
+    data-theme="${theme}"
+    data-theme-color="${themeColor}"
+    data-welcome-message="${encodeURIComponent(welcomeMessage)}"
+    is-popup="${isPopup}"
+    width="${width}"
+    height="${height}"
+><\\/your-chatbot-embed>`;
+            document.getElementById('generated-code').value = `${scriptTag}\n${embedTag}`;
+        }
+
+        function copyToClipboard() {
+            const code = document.getElementById('generated-code').value;
+            navigator.clipboard.writeText(code).then(() => {
+                alert('Embed code copied to clipboard!');
+            }, (err) => {
+                alert('Failed to copy code. Please try manually.');
+                console.error('Could not copy text: ', err);
+            });
+        }
+
+        // Ensure all appearance inputs trigger embed code regeneration
+        document.getElementById('chatbot-display-name').addEventListener('input', () => {
+            // Update title if not in edit mode (i.e., creating new)
+            if (!editingChatbotId) {
+                document.getElementById('customization-page-title').textContent = `Create New Chatbot: ${document.getElementById('chatbot-display-name').value || ''}`;
+            }
+        });
+
+    </script>
+</body>
+</html>
